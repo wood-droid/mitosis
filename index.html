@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cell Cycle Matching Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #d3d3d3; }
+        .container { display: flex; flex-wrap: wrap; justify-content: center; }
+        .box { width: 150px; height: 200px; margin: 10px; border: 2px solid black; display: flex; align-items: center; justify-content: center; flex-direction: column; background-color: #add8e6; border-radius: 10px; position: relative; }
+        .label { padding: 10px; background-color: lightblue; cursor: grab; margin: 5px; display: inline-block; }
+        .labels-container { background-color: white; padding: 15px; margin: 20px auto; width: 60%; border-radius: 10px; }
+        button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>Match the Cell Cycle Stages</h1>
+    <div class="labels-container">
+        <h2>Phases</h2>
+        <div class="container" id="labels">
+            <div class="label" id="label-Interphase" draggable="true" data-stage="Interphase">Interphase</div>
+            <div class="label" id="label-Prophase" draggable="true" data-stage="Prophase">Prophase</div>
+            <div class="label" id="label-Prometaphase" draggable="true" data-stage="Prometaphase">Prometaphase</div>
+            <div class="label" id="label-Metaphase" draggable="true" data-stage="Metaphase">Metaphase</div>
+            <div class="label" id="label-Anaphase" draggable="true" data-stage="Anaphase">Anaphase</div>
+            <div class="label" id="label-Telophase" draggable="true" data-stage="Telophase">Telophase</div>
+        </div>
+    </div>
+    <div class="container" id="images">
+        <div class="box" data-stage="Interphase"><img src="Interphase.jpg" alt="Interphase" width="100"></div>
+        <div class="box" data-stage="Prophase"><img src="Prophase.jpg" alt="Prophase" width="100"></div>
+        <div class="box" data-stage="Prometaphase"><img src="Prometaphase.jpg" alt="Prometaphase" width="100"></div>
+        <div class="box" data-stage="Metaphase"><img src="Metaphase.jpg" alt="Metaphase" width="100"></div>
+        <div class="box" data-stage="Anaphase"><img src="Anaphase.jpg" alt="Anaphase" width="100"></div>
+        <div class="box" data-stage="Telophase"><img src="Telophase.jpg" alt="Telophase" width="100"></div>
+    </div>
+    <button onclick="checkAnswers()">Check my work</button>
+    <p id="result"></p>
+    <script>
+        const labels = document.querySelectorAll('.label');
+        const boxes = document.querySelectorAll('.box');
+        const labelContainer = document.getElementById("labels");
+        
+        labels.forEach(label => {
+            label.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('id', label.id);
+                e.dataTransfer.setData('origin', label.parentNode.id);
+            });
+        });
+
+        boxes.forEach(box => {
+            box.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            box.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const labelId = e.dataTransfer.getData('id');
+                const labelElement = document.getElementById(labelId);
+                const existingLabel = box.querySelector(".label");
+                
+                if (existingLabel) {
+                    labelContainer.appendChild(existingLabel);
+                }
+                
+                box.appendChild(labelElement);
+            });
+        });
+
+        function checkAnswers() {
+            let correctMatches = 0;
+            boxes.forEach(box => {
+                const placedLabel = box.querySelector(".label");
+                if (placedLabel && placedLabel.dataset.stage === box.dataset.stage) {
+                    correctMatches++;
+                }
+            });
+            const resultText = correctMatches === 6 ? "You have all 6 correct. Great job!" : `You have ${correctMatches} correct. Try again if needed!`;
+            document.getElementById('result').textContent = resultText;
+        }
+    </script>
+</body>
+</html>
